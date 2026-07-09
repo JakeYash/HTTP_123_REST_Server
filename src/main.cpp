@@ -6,6 +6,10 @@
 int main()
 {
 	int serverSocket = socket(AF_INET, SOCK_STREAM, 0); //creates default ipv4 tcp socket
+	
+	int opt = 1;
+	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        // allows overriding os timeout on port	
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET; //IPV4
 	serverAddress.sin_port = htons(8080); //PORT 8080 TO NETWORK BIG ENDIAN
@@ -17,12 +21,13 @@ int main()
 	recv(clientSocket, buffer, sizeof(buffer), 0);
 	std::cout << "Message from client: " << buffer << std::endl;
 	// client sends, we recieve, and print
-std::string response =
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/plain\r\n"
-    "Content-Length: 13\r\n"
-    "\r\n"
-    "Hello, world!";	
+	std::string response =
+    		"HTTP/1.1 200 OK\r\n"
+    		"Content-Type: text/plain\r\n"
+    		"Content-Length: 13\r\n"
+    		"\r\n"
+    		"Hello, world!";	
+	
 	send(clientSocket, response.c_str(), response.size(), 0);
 	close(clientSocket);
 	//as is, this code blocks at accept until a singular client connects, and same for rcv
