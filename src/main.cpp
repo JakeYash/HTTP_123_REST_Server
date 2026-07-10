@@ -2,6 +2,9 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <sstream>
+#include <vector>
+
 
 int main()
 {
@@ -19,7 +22,24 @@ int main()
 	int clientSocket = accept(serverSocket, nullptr, nullptr); // accept incoming connections, ignoring storage of ip and port, but opening a new socket to send to the client that was just recieved (on our same ip and port)
 	char buffer[1024] = {0};
 	recv(clientSocket, buffer, sizeof(buffer), 0);
-	std::cout << "Message from client: " << buffer << std::endl;
+	std::cout << "Message from client: ";
+	
+	std::string buffer_as_string(buffer);
+	std::vector<std::string> split_request;
+	std::stringstream ss(buffer_as_string);
+	std::string chunk;
+	while (std::getline(ss,chunk,' '))
+	{
+		split_request.push_back(chunk);
+	}
+
+	for (const auto& str : split_request)
+	{
+		std::cout << str << "\n";
+	}
+
+
+
 	// client sends, we recieve, and print
 	std::string response =
     		"HTTP/1.1 200 OK\r\n"
